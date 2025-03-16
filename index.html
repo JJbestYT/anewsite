@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smooth springende Pop-ups mit GIF (Feste Größe)</title>
+</head>
+<body>
+
+    <h1>Willkommen zu den springenden Pop-ups!</h1>
+    <button onclick="openPopup()">Pop-up öffnen</button>
+
+    <script>
+        // Funktion, um ein Pop-up zu öffnen
+        function openPopup() {
+            // Öffnet das Pop-up-Fenster mit fester Größe
+            let popup = window.open("", "", "width=300,height=200");
+
+            // Pop-up-Inhalt einfügen
+            popup.document.write("<h1>Ich springe!</h1>");
+            popup.document.write("<p>Dieses Fenster springt herum!</p>");
+
+            // Hier wird der Bewegungs-Code im Pop-up eingefügt
+            popup.document.write(`
+                <script>
+                    // Geschwindigkeit der Bewegung (höhere Werte = schneller)
+                    const speed = 5;
+
+                    // GIF URL (ersetze durch dein eigenes GIF oder eine URL von einem GIF)
+                    const gifUrl = 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExb24zdnJmNmV5eHRwcjNhbDhneHdtOThwbmVvZ2xqZXRrdXBzcnFpaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sIIhZliB2McAo/giphy.gif';  // Beispiel-GIF
+
+                    // Funktion, um das Pop-up sanft zu bewegen
+                    function movePopup() {
+                        if (!window.opener) return; // Überprüfen, ob das Pop-up noch geöffnet ist
+
+                        // Berechne zufällige Zielpositionen im Bildschirmbereich
+                        let randomX = Math.floor(Math.random() * (screen.width - 300)); // Zufällige X-Position
+                        let randomY = Math.floor(Math.random() * (screen.height - 200)); // Zufällige Y-Position
+
+                        // Hole aktuelle Position des Pop-ups
+                        let currentX = window.screenX;
+                        let currentY = window.screenY;
+
+                        // Berechne die Differenz zwischen der aktuellen Position und der Zielposition
+                        let deltaX = randomX - currentX;
+                        let deltaY = randomY - currentY;
+
+                        // Berechne die Schrittgröße (Geschwindigkeit)
+                        let stepX = deltaX / speed;
+                        let stepY = deltaY / speed;
+
+                        // Funktion für die kontinuierliche Bewegung
+                        function continuousMove() {
+                            currentX += stepX;
+                            currentY += stepY;
+
+                            // Bewege das Pop-up zum nächsten Schritt
+                            window.moveTo(currentX, currentY);
+
+                            // Wenn das Pop-up noch nicht an der Zielposition ist, wiederhole die Bewegung
+                            if (Math.abs(deltaX) > Math.abs(currentX - randomX) && Math.abs(deltaY) > Math.abs(currentY - randomY)) {
+                                // Fortfahren mit der nächsten Animation, um das Pop-up kontinuierlich zu bewegen
+                                requestAnimationFrame(continuousMove);
+                            } else {
+                                // Sobald das Pop-up sein Ziel erreicht hat, wird sofort eine neue zufällige Zielposition berechnet
+                                movePopup();
+                            }
+                        }
+
+                        // Starte die Animation sofort
+                        continuousMove();
+                    }
+
+                    // Füge das GIF in das Pop-up ein
+                    setInterval(function() {
+                        // Hole die feste Größe des Pop-up-Fensters (300x200)
+                        const popupWidth = 300;
+                        const popupHeight = 200;
+
+                        // Erstelle ein Image-Element mit dem GIF
+                        let gifElement = document.createElement('img');
+                        gifElement.src = gifUrl; // Setze die Quelle des GIFs
+                        gifElement.style.position = 'absolute';
+                        gifElement.style.top = '0';
+                        gifElement.style.left = '0';
+                        gifElement.style.width = popupWidth + 'px'; // Setze die Breite des GIFs auf die Fensterbreite
+                        gifElement.style.height = popupHeight + 'px'; // Setze die Höhe des GIFs auf die Fensterhöhe
+                        gifElement.style.objectFit = 'cover'; // Das GIF füllt das Pop-up, behält aber das Seitenverhältnis bei
+
+                        // Füge das GIF zum Pop-up hinzu
+                        document.body.appendChild(gifElement);
+                    }, 1000); // Alle 1000ms (1 Sekunde) das GIF einfügen
+
+                    // Starte die Bewegung sofort nach dem Laden des Pop-ups
+                    movePopup();
+                <\/script>
+            `);
+        }
+    </script>
+
+</body>
+</html>
