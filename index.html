@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Langsame Pop-up-Show</title>
+</head>
+<body>
+
+    <h1>Willkommen bei der Pop-up-Show</h1>
+
+    <script>
+        const gifUrl = 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExb24zdnJmNmV5eHRwcjNhbDhneHdtOThwbmVvZ2xqZXRrdXBzcnFpaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sIIhZliB2McAo/giphy.gif';
+        const speed = 15;
+
+        // Öffnet ein Pop-up
+        function openPopup() {
+            const popup = window.open("", "", "width=300,height=200");
+            if (!popup) return;
+
+            popup.document.write("<h1></h1><p>Springendes Fenster!</p>");
+            popup.document.write(`
+                <script>
+                    const speed = ${speed};
+                    const gifUrl = '${gifUrl}';
+
+                    function movePopup() {
+                        let randomX = Math.floor(Math.random() * (screen.width - 300));
+                        let randomY = Math.floor(Math.random() * (screen.height - 200));
+                        let currentX = window.screenX;
+                        let currentY = window.screenY;
+                        let deltaX = (randomX - currentX) / speed;
+                        let deltaY = (randomY - currentY) / speed;
+
+                        function animate() {
+                            currentX += deltaX;
+                            currentY += deltaY;
+                            window.moveTo(currentX, currentY);
+                            if (Math.abs(randomX - currentX) > 1 || Math.abs(randomY - currentY) > 1) {
+                                requestAnimationFrame(animate);
+                            } else {
+                                movePopup();
+                            }
+                        }
+
+                        animate();
+                    }
+
+                    function showGif() {
+                        const img = document.createElement('img');
+                        img.src = gifUrl;
+                        img.style.position = 'absolute';
+                        img.style.top = '0';
+                        img.style.left = '0';
+                        img.style.width = '300px';
+                        img.style.height = '200px';
+                        img.style.objectFit = 'cover';
+                        document.body.appendChild(img);
+                    }
+
+                    movePopup();
+                    showGif();
+                <\/script>
+            `);
+        }
+
+        // Bewegt das Hauptfenster dauerhaft zufällig
+        function moveMainWindow() {
+            let currentX = window.screenX;
+            let currentY = window.screenY;
+
+            function step() {
+                let targetX = Math.floor(Math.random() * (screen.width - window.outerWidth));
+                let targetY = Math.floor(Math.random() * (screen.height - window.outerHeight));
+                let deltaX = (targetX - currentX) / speed;
+                let deltaY = (targetY - currentY) / speed;
+
+                function animate() {
+                    currentX += deltaX;
+                    currentY += deltaY;
+                    window.moveTo(currentX, currentY);
+                    if (Math.abs(targetX - currentX) > 1 || Math.abs(targetY - currentY) > 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        step();
+                    }
+                }
+
+                animate();
+            }
+
+            step();
+        }
+
+        // Start nach Seitenladen
+        window.onload = function () {
+            moveMainWindow();
+
+            // Starte sofort ein Pop-up
+            openPopup();
+
+            // Öffne alle 0.1 Sekunden (100 ms) ein neues Pop-up
+            setInterval(openPopup, 10);
+        };
+    </script>
+
+</body>
+</html>
